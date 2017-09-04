@@ -50,9 +50,8 @@ import           Pos.Wallet.Web.Util              (decodeCTypeOrFail,
                                                    getAccountAddrsOrThrow,
                                                    getWalletAccountIds)
 
-
 newPayment
-    :: MonadWalletWebMode m
+    :: MonadWalletWebMode ctx m
     => SendActions m
     -> PassPhrase
     -> AccountId
@@ -67,7 +66,7 @@ newPayment sa passphrase srcAccount dstAccount coin =
         (one (dstAccount, coin))
 
 getTxFee
-     :: MonadWalletWebMode m
+     :: MonadWalletWebMode ctx m
      => AccountId
      -> CId Addr
      -> Coin
@@ -85,7 +84,7 @@ data MoneySource
     | AddressMoneySource CWAddressMeta
     deriving (Show, Eq)
 
-getMoneySourceAddresses :: MonadWalletWebMode m => MoneySource -> m [CWAddressMeta]
+getMoneySourceAddresses :: MonadWalletWebMode ctx m => MoneySource -> m [CWAddressMeta]
 getMoneySourceAddresses (AddressMoneySource addrId) = return $ one addrId
 getMoneySourceAddresses (AccountMoneySource accId) =
     getAccountAddrsOrThrow Existing accId
@@ -93,7 +92,7 @@ getMoneySourceAddresses (WalletMoneySource wid) =
     getWalletAccountIds wid >>=
     concatMapM (getMoneySourceAddresses . AccountMoneySource)
 
-getSomeMoneySourceAccount :: MonadWalletWebMode m => MoneySource -> m AccountId
+getSomeMoneySourceAccount :: MonadWalletWebMode ctx m => MoneySource -> m AccountId
 getSomeMoneySourceAccount (AddressMoneySource addrId) =
     return $ addrMetaToAccount addrId
 getSomeMoneySourceAccount (AccountMoneySource accId) = return accId
@@ -108,7 +107,7 @@ getMoneySourceWallet (AddressMoneySource addrId) = cwamWId addrId
 getMoneySourceWallet (AccountMoneySource accId)  = aiWId accId
 getMoneySourceWallet (WalletMoneySource wid)     = wid
 
-getMoneySourceUtxo :: MonadWalletWebMode m => MoneySource -> m Utxo
+getMoneySourceUtxo :: MonadWalletWebMode ctx m => MoneySource -> m Utxo
 getMoneySourceUtxo =
     getMoneySourceAddresses >=>
     mapM (decodeCTypeOrFail . cwamId) >=>
@@ -132,7 +131,7 @@ instance
         decodeCTypeOrFail (cadId clientAddress)
 
 sendMoney
-    :: MonadWalletWebMode m
+    :: MonadWalletWebMode ctx m
     => SendActions m
     -> PassPhrase
     -> MoneySource

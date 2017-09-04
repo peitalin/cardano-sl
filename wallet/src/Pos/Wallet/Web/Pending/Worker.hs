@@ -39,14 +39,14 @@ import           Pos.Wallet.Web.State              (PtxMetaUpdate (PtxIncSubmitT
                                                     getPendingTxs, ptxUpdateMeta)
 import           Pos.Wallet.Web.Util               (getWalletAssuredDepth)
 
-type MonadPendings m =
-    ( MonadWalletWebMode m
+type MonadPendings ctx m =
+    ( MonadWalletWebMode ctx m
     , MonadAddresses m
     , HasConfiguration
     , HasNodeConfiguration
     )
 
-processPtxInNewestBlocks :: MonadPendings m => PendingTx -> m ()
+processPtxInNewestBlocks :: MonadPendings ctx m => PendingTx -> m ()
 processPtxInNewestBlocks PendingTx{..} = do
     mdepth <- getWalletAssuredDepth _ptxWallet
     tipDiff <- view difficultyL <$> getTipHeader @WalletSscType
@@ -60,7 +60,7 @@ processPtxInNewestBlocks PendingTx{..} = do
      longAgo depth (ChainDifficulty ptxDiff) (ChainDifficulty tipDiff) =
          ptxDiff + depth <= tipDiff
 
-resubmitTx :: MonadPendings m => SendActions m -> PendingTx -> m ()
+resubmitTx :: MonadPendings ctx m => SendActions m -> PendingTx -> m ()
 resubmitTx SendActions{..} ptx =
     handleAll (\_ -> pass) $ do
         logInfo $ sformat ("Resubmitting tx "%build) (_ptxTxId ptx)
@@ -80,7 +80,7 @@ resubmitTx SendActions{..} ptx =
 
 -- | Distributes pending txs submition over current slot ~evenly
 resubmitPtxsDuringSlot
-    :: MonadPendings m
+    :: MonadPendings ctx m
     => SendActions m -> [PendingTx] -> m ()
 resubmitPtxsDuringSlot sendActions ptxs = do
     interval <- evalSubmitDelay (length ptxs)
@@ -96,7 +96,7 @@ resubmitPtxsDuringSlot sendActions ptxs = do
         return (checkPeriod `div` fromIntegral toResubmitNum)
 
 processPtxsToResubmit
-    :: MonadPendings m
+    :: MonadPendings ctx m
     => SendActions m -> SlotId -> [PendingTx] -> m ()
 processPtxsToResubmit sendActions curSlot ptxs = do
     ptxsPerSlotLimit <- evalPtxsPerSlotLimit
@@ -121,14 +121,14 @@ processPtxsToResubmit sendActions curSlot ptxs = do
 -- | Checks and updates state of given pending transactions, resubmitting them
 -- if needed.
 processPtxs
-    :: MonadPendings m
+    :: MonadPendings ctx m
     => SendActions m -> SlotId -> [PendingTx] -> m ()
 processPtxs sendActions curSlot ptxs = do
     mapM_ processPtxInNewestBlocks ptxs
     processPtxsToResubmit sendActions curSlot ptxs
 
 processPtxsOnSlot
-    :: MonadPendings m
+    :: MonadPendings ctx m
     => SendActions m -> SlotId -> m ()
 processPtxsOnSlot sendActions curSlot = do
     ptxs <- getPendingTxs
@@ -144,7 +144,7 @@ processPtxsOnSlot sendActions curSlot = do
 -- | On each slot this takes several pending transactions and resubmits them if
 -- needed and possible.
 startPendingTxsResubmitter
-    :: MonadPendings m
+    :: MonadPendings ctx m
     => SendActions m -> m ()
 startPendingTxsResubmitter sa =
     void . fork . setLogger $

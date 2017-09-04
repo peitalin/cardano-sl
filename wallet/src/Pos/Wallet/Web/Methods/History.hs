@@ -37,7 +37,7 @@ import           Pos.Wallet.Web.Util        (decodeCTypeOrFail, getAccountAddrsO
                                              getWalletAddrs, getWalletThTime)
 
 
-getFullWalletHistory :: MonadWalletWebMode m => CId Wal -> m ([CTx], Word)
+getFullWalletHistory :: MonadWalletWebMode ctx m => CId Wal -> m ([CTx], Word)
 getFullWalletHistory cWalId = do
     addrs <- mapM decodeCTypeOrFail =<< getWalletAddrs Ever cWalId
 
@@ -69,7 +69,7 @@ getFullWalletHistory cWalId = do
         in  filter ((`S.notMember` blockTxIdsSet) . _thTxId) localH
 
 getHistory
-    :: MonadWalletWebMode m
+    :: MonadWalletWebMode ctx m
     => Maybe (CId Wal)
     -> Maybe AccountId
     -> Maybe (CId Addr)
@@ -101,7 +101,7 @@ getHistory mCWalId mAccountId mAddrId = do
         "Specified wallet/account does not contain specified address"
 
 getHistoryLimited
-    :: MonadWalletWebMode m
+    :: MonadWalletWebMode ctx m
     => Maybe (CId Wal)
     -> Maybe AccountId
     -> Maybe (CId Addr)
@@ -118,7 +118,7 @@ getHistoryLimited mCWalId mAccId mAddrId mSkip mLimit =
     defaultSkip = 0
 
 addHistoryTx
-    :: MonadWalletWebMode m
+    :: MonadWalletWebMode ctx m
     => CId Wal
     -> TxHistoryEntry
     -> m CTx
@@ -136,12 +136,12 @@ addHistoryTx cWalId wtx@THEntry{..} = do
     either (throwM . InternalError) pure $
         mkCTx diff wtx meta' ptxCond walAddrMetas
 
-updateTransaction :: MonadWalletWebMode m => AccountId -> CTxId -> CTxMeta -> m ()
+updateTransaction :: MonadWalletWebMode ctx m => AccountId -> CTxId -> CTxMeta -> m ()
 updateTransaction accId txId txMeta = do
     setWalletTxMeta (aiWId accId) txId txMeta
 
 addRecentPtxHistory
-    :: MonadWalletWebMode m
+    :: MonadWalletWebMode ctx m
     => CId Wal -> [TxHistoryEntry] -> m [TxHistoryEntry]
 addRecentPtxHistory wid currentHistory = do
     candidates <- sortWith (Down . _thTimestamp) <$> getCandidates
