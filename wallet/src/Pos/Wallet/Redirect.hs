@@ -28,15 +28,14 @@ import qualified Pos.Context               as PC
 import           Pos.Core                  (ChainDifficulty, HasConfiguration,
                                             difficultyL, flattenEpochOrSlot,
                                             flattenSlotId, slotSecurityParam)
-import           Pos.DB                    (MonadRealDB)
 import           Pos.DB.Block              (MonadBlockDB)
 import           Pos.DB.DB                 (getTipHeader)
+import qualified Pos.GState                as GS
 import           Pos.Shutdown              (HasShutdownContext, triggerShutdown)
 import           Pos.Slotting              (MonadSlots (..), getNextEpochSlotDuration)
 import           Pos.Update.Context        (UpdateContext (ucDownloadedUpdate))
 import           Pos.Update.Poll.Types     (ConfirmedProposalState)
 import           Pos.Wallet.WalletMode     (MonadBlockchainInfo (..), MonadUpdates (..))
-import qualified Pos.GState                as GS
 
 ----------------------------------------------------------------------------
 -- BlockchainInfo
@@ -55,7 +54,6 @@ type BlockchainInfoEnv ssc ctx m =
     , MonadReader ctx m
     , HasLens PC.ConnectedPeers ctx PC.ConnectedPeers
     , MonadIO m
-    , MonadRealDB ctx m
     , MonadSlots ctx m
     , HasConfiguration
     )

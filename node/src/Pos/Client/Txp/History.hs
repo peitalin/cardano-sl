@@ -54,7 +54,7 @@ import           Pos.Core                     (Address, ChainDifficulty, HasConf
                                                HeaderHash, Timestamp (..), difficultyL,
                                                headerHash)
 import           Pos.Crypto                   (WithHash (..), withHash)
-import           Pos.DB                       (MonadDBRead, MonadGState, MonadRealDB)
+import           Pos.DB                       (MonadDBRead, MonadGState)
 import           Pos.DB.Block                 (MonadBlockDB)
 import qualified Pos.GState                   as GS
 import           Pos.KnownPeers               (MonadFormatPeers)
@@ -228,8 +228,7 @@ instance {-# OVERLAPPABLE #-}
         MonadTxHistory ssc (t m)
 
 type TxHistoryEnv ctx m =
-    ( MonadRealDB ctx m
-    , MonadDBRead m
+    ( MonadDBRead m
     , MonadGState m
     , MonadMask m
     , WithLogger m
@@ -238,10 +237,10 @@ type TxHistoryEnv ctx m =
     , MonadTxpMem TxpExtra_TMP ctx m
     , HasLens' ctx StateLock
     , HasLens' ctx StateLockMetrics
+    , HasReportingContext ctx
     , MonadBaseControl IO m
     , Mockable CurrentTime m
     , MonadFormatPeers m
-    , HasReportingContext ctx
     )
 
 type TxHistoryEnv' ssc ctx m =

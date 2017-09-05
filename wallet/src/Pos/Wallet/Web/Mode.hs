@@ -96,8 +96,9 @@ import           Pos.Wallet.Web.Account           (AccountMode)
 import           Pos.Wallet.Web.ClientTypes       (AccountId)
 import           Pos.Wallet.Web.Sockets.ConnSet   (ConnectionsVar)
 import           Pos.Wallet.Web.State.State       (WalletState)
-import           Pos.Wallet.Web.Tracking          (MonadBListener (..), onApplyTracking,
-                                                   onRollbackTracking)
+import           Pos.Wallet.Web.Tracking          (MonadBListener (..),
+                                                   onApplyBlocksWebWallet,
+                                                   onRollbackBlocksWebWallet)
 
 data WalletWebModeContext = WalletWebModeContext
     { wwmcWalletState     :: !WalletState
@@ -244,8 +245,8 @@ instance HasConfiguration => MonadGState WalletWebMode where
     gsAdoptedBVData = gsAdoptedBVDataDefault
 
 instance (HasConfiguration, HasInfraConfiguration) => MonadBListener WalletWebMode where
-    onApplyBlocks = onApplyTracking
-    onRollbackBlocks = onRollbackTracking
+    onApplyBlocks = onApplyBlocksWebWallet
+    onRollbackBlocks = onRollbackBlocksWebWallet
 
 instance MonadUpdates WalletWebMode where
     waitForUpdate = waitForUpdateWebWallet
@@ -261,7 +262,8 @@ instance HasConfiguration => MonadBalances WalletWebMode where
     getOwnUtxos = getOwnUtxosDefault
     getBalance = getBalanceDefault
 
-instance (HasConfiguration, HasGtConfiguration, HasInfraConfiguration) => MonadTxHistory WalletSscType WalletWebMode where
+instance (HasConfiguration, HasGtConfiguration, HasInfraConfiguration)
+        => MonadTxHistory WalletSscType WalletWebMode where
     getBlockHistory = getBlockHistoryDefault @WalletSscType
     getLocalHistory = getLocalHistoryDefault
     saveTx = saveTxDefault
