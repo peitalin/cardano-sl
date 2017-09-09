@@ -7,6 +7,8 @@ module Pos.Wallet.Web.Mode
        , WalletWebModeContextTag
        , WalletWebModeContext(..)
        , MonadWalletWebMode
+       , MonadWebSockets
+       , MonadFullWalletWebMode
        ) where
 
 import           Universum
@@ -65,7 +67,7 @@ import           Pos.Ssc.Class.Helpers            (SscHelpersClass)
 import           Pos.Ssc.Class.Types              (HasSscContext (..), SscBlock)
 import           Pos.Ssc.GodTossing.Configuration (HasGtConfiguration)
 import           Pos.StateLock                    (StateLock)
-import           Pos.Txp                          (MonadTxpMem)
+import           Pos.Txp.MemState                 (MonadTxpMem)
 import           Pos.Util                         (Some (..))
 import           Pos.Util.JsonLog                 (HasJsonLogConfig (..), jsonLogDefault)
 import           Pos.Util.LoggerName              (HasLoggerName' (..),
@@ -74,7 +76,7 @@ import           Pos.Util.LoggerName              (HasLoggerName' (..),
 import qualified Pos.Util.OutboundQueue           as OQ.Reader
 import           Pos.Util.TimeWarp                (CanJsonLog (..))
 import           Pos.Util.UserSecret              (HasUserSecret (..))
-import           Pos.Util.Util                    (postfixLFields)
+import           Pos.Util.Util                    (HasLens', postfixLFields)
 import           Pos.WorkMode                     (MinWorkMode, RealModeContext (..),
                                                    TxpExtra_TMP)
 
@@ -180,10 +182,18 @@ type MonadWalletWebMode' ssc ctx m =
     , MonadAddresses m
     , MonadRandom m
     , AddrData m ~ (AccountId, PassPhrase)
-    , HasLens ConnectionsVar ctx ConnectionsVar
     )
 
 type MonadWalletWebMode ctx m = MonadWalletWebMode' WalletSscType ctx m
+
+type MonadWebSockets ctx =
+    ( HasLens' ctx ConnectionsVar
+    )
+
+type MonadFullWalletWebMode ctx m =
+    ( MonadWalletWebMode ctx m
+    , MonadWebSockets ctx
+    )
 
 instance (HasConfiguration, HasInfraConfiguration, MonadSlotsData ctx WalletWebMode)
       => MonadSlots ctx WalletWebMode
