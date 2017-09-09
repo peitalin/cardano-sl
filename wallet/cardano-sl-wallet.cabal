@@ -80,6 +80,7 @@ library
                       , cardano-sl-update
                       , cardano-sl
                       , containers
+                      , cryptonite
                       , data-default
                       , directory
                       , dlist
@@ -89,6 +90,7 @@ library
                       , formatting
                       , lens
                       , log-warper
+                      , monad-control
                       , mtl
                       , network-transport
                       , node-sketch
