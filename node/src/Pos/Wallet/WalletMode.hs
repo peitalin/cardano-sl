@@ -54,9 +54,9 @@ instance {-# OVERLAPPABLE #-}
 -- Composite restrictions
 ---------------------------------------------------------------
 
-type MonadWallet ssc ctx m
+type MonadWallet ssc m
     = ( TxMode ssc m
-      , MonadKeys ctx m
+      , MonadKeys m
       , MonadBlockchainInfo m
       , MonadUpdates m
       , CanJsonLog m
