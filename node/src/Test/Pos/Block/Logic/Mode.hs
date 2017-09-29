@@ -13,7 +13,6 @@ module Test.Pos.Block.Logic.Mode
        , BlockTestContextTag
        , PureDBSnapshotsVar(..)
        , BlockTestContext(..)
-       , btcSlotId_L
        , BlockTestMode
        , runBlockTestMode
 
@@ -21,11 +20,27 @@ module Test.Pos.Block.Logic.Mode
        , blockPropertyToProperty
 
        , HasVarSpecConfigurations
+
+       -- Lens
+       , btcGStateL
+       , btcSystemStartL
+       , btcLoggerNameL
+       , btcSSlottingVarL
+       , btcUpdateContextL
+       , btcSscStateL
+       , btcTxpMemL
+       , btcTxpGlobalSettingsL
+       , btcSlotIdL
+       , btcParamsL
+       , btcReportingContextL
+       , btcDelegationL
+       , btcPureDBSnapshotsL
        ) where
 
 import           Universum
 
-import           Control.Lens                     (lens, makeClassy, makeLensesWith)
+import           Control.Lens                     (lens, makeClassy, makeLensesFor,
+                                                   makeLensesWith)
 import qualified Data.Map                         as Map
 import qualified Data.Text.Buildable
 import           Data.Time.Units                  (Microsecond, TimeUnit (..))
@@ -196,10 +211,24 @@ data BlockTestContext = BlockTestContext
     , btcPureDBSnapshots   :: !PureDBSnapshotsVar
     }
 
-makeLensesWith postfixLFields ''BlockTestContext
+flip makeLensesFor ''BlockTestContext
+    [ ("btcGState", "btcGStateL")
+    , ("btcSystemStart", "btcSystemStartL")
+    , ("btcLoggerName", "btcLoggerNameL")
+    , ("btcSSlottingVar", "btcSSlottingVarL")
+    , ("btcUpdateContext", "btcUpdateContextL")
+    , ("btcSscState", "btcSscStateL")
+    , ("btcTxpMem", "btcTxpMemL")
+    , ("btcTxpGlobalSettings", "btcTxpGlobalSettingsL")
+    , ("btcSlotId", "btcSlotIdL")
+    , ("btcParams", "btcParamsL")
+    , ("btcReportingContext", "btcReportingContextL")
+    , ("btcDelegation", "btcDelegationL")
+    , ("btcPureDBSnapshots", "btcPureDBSnapshotsL")
+    ]
 
 instance HasTestParams BlockTestContext where
-    testParams = btcParams_L
+    testParams = btcParamsL
 
 instance HasAllSecrets BlockTestContext where
     allSecrets = testParams . allSecrets
@@ -348,7 +377,7 @@ instance (HasConfiguration, MonadSlotsData ctx TestInitMode)
 ----------------------------------------------------------------------------
 
 instance GS.HasGStateContext BlockTestContext where
-    gStateContext = btcGState_L
+    gStateContext = btcGStateL
 
 instance HasLens DBPureVar BlockTestContext DBPureVar where
     lensOf = GS.gStateContext . GS.gscDB . pureDBLens
@@ -362,44 +391,44 @@ instance HasLens DBPureVar BlockTestContext DBPureVar where
         realDBInTestsError = error "You are using real db in tests"
 
 instance HasLens PureDBSnapshotsVar BlockTestContext PureDBSnapshotsVar where
-    lensOf = btcPureDBSnapshots_L
+    lensOf = btcPureDBSnapshotsL
 
 instance HasLens LoggerName BlockTestContext LoggerName where
-      lensOf = btcLoggerName_L
+      lensOf = btcLoggerNameL
 
 instance HasLens LrcContext BlockTestContext LrcContext where
     lensOf = GS.gStateContext . GS.gscLrcContext
 
 instance HasLens UpdateContext BlockTestContext UpdateContext where
-      lensOf = btcUpdateContext_L
+      lensOf = btcUpdateContextL
 
 instance HasLens SscMemTag BlockTestContext (SscState SscGodTossing) where
-      lensOf = btcSscState_L
+      lensOf = btcSscStateL
 
 instance HasLens TxpGlobalSettings BlockTestContext TxpGlobalSettings where
-      lensOf = btcTxpGlobalSettings_L
+      lensOf = btcTxpGlobalSettingsL
 
 instance HasLens TestParams BlockTestContext TestParams where
-      lensOf = btcParams_L
+      lensOf = btcParamsL
 
 instance HasLens SimpleSlottingVar BlockTestContext SimpleSlottingVar where
-      lensOf = btcSSlottingVar_L
+      lensOf = btcSSlottingVarL
 
 instance HasReportingContext BlockTestContext where
-    reportingContext = btcReportingContext_L
+    reportingContext = btcReportingContextL
 
 instance HasSlottingVar BlockTestContext where
-    slottingTimestamp = btcSystemStart_L
+    slottingTimestamp = btcSystemStartL
     slottingVar = GS.gStateContext . GS.gscSlottingVar
 
 instance HasSlogGState BlockTestContext where
     slogGState = GS.gStateContext . GS.gscSlogGState
 
 instance HasLens DelegationVar BlockTestContext DelegationVar where
-    lensOf = btcDelegation_L
+    lensOf = btcDelegationL
 
 instance HasLens TxpHolderTag BlockTestContext (GenericTxpLocalData TxpExtra_TMP) where
-    lensOf = btcTxpMem_L
+    lensOf = btcTxpMemL
 
 instance HasLoggerName' BlockTestContext where
     loggerName = lensOf @LoggerName
