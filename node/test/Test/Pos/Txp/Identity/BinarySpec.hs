@@ -17,8 +17,8 @@ import qualified Pos.Txp                 as T
 import           Pos.Util                (SmallGenerator)
 
 import           Test.Pos.CborSpec       (extensionProperty)
-import           Test.Pos.Util           (binaryTest, giveInfraConf, giveCoreConf,
-                                          msgLenLimitedTest)
+import           Test.Pos.Helpers        (binaryTest, msgLenLimitedTest)
+import           Test.Pos.Util           (giveCoreConf, giveInfraConf)
 
 spec :: Spec
 spec = giveInfraConf $ giveCoreConf $ describe "Txp (transaction processing) system" $ do

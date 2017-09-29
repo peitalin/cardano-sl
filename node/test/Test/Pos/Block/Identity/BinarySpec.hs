@@ -15,7 +15,8 @@ import qualified Pos.Communication   ()
 import           Pos.Ssc.GodTossing  (SscGodTossing)
 import           Pos.Ssc.NistBeacon  (SscNistBeacon)
 
-import           Test.Pos.Util       (binaryTest, giveCoreConf)
+import           Test.Pos.Helpers    (binaryTest)
+import           Test.Pos.Util       (giveCoreConf)
 
 spec :: Spec
 spec = giveCoreConf $ describe "Block types" $ do

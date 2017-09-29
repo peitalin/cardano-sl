@@ -13,7 +13,9 @@ import           Pos.Arbitrary.Infra           ()
 import           Pos.Communication.Types.Relay (DataMsg (..))
 import           Pos.Core                      (ProxySKHeavy, ProxySKLight)
 import           Pos.Delegation                (DlgPayload, ProxySKLightConfirmation)
-import           Test.Pos.Util                 (binaryTest, giveCoreConf)
+
+import           Test.Pos.Helpers              (binaryTest)
+import           Test.Pos.Util                 (giveCoreConf)
 
 
 spec :: Spec

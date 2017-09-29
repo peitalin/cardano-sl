@@ -167,6 +167,8 @@ library
                         Pos.Generator.Block.Param
 
                         -- Common code for tests
+                        Test.Pos.Configuration
+                        Test.Pos.Util
                         Test.Pos.Block.Logic.Emulation
                         Test.Pos.Block.Logic.Mode
                         Test.Pos.Block.Logic.Util
@@ -581,7 +583,6 @@ test-suite cardano-test
                        -- Everything else
                        Test.Pos.CborSpec
                        Test.Pos.Communication.Identity.BinarySpec
-                       Test.Pos.Configuration
                        Test.Pos.ConstantsSpec
                        Test.Pos.Core.AddressSpec
                        Test.Pos.CryptoSpec
@@ -612,7 +613,7 @@ test-suite cardano-test
                        Test.Pos.Update.Identity.SafeCopySpec
                        Test.Pos.Update.MemStateSpec
                        Test.Pos.Update.PollSpec
-                       Test.Pos.Util
+                       Test.Pos.Helpers
                        Test.Pos.Util.LimitsSpec
                        Test.Pos.Util.ModifierSpec
                        Test.Pos.UtilSpec

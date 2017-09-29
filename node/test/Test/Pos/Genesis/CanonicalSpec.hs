@@ -15,7 +15,8 @@ import           Pos.Core.Genesis           (GenesisAvvmBalances, GenesisData,
                                              ProtocolConstants)
 import           Pos.Core.Genesis.Canonical ()
 
-import           Test.Pos.Util              (canonicalJsonTest, giveCoreConf)
+import           Test.Pos.Helpers           (canonicalJsonTest)
+import           Test.Pos.Util              (giveCoreConf)
 
 spec :: Spec
 spec = giveCoreConf $ describe "Genesis" $ modifyMaxSuccess (const 10) $ do

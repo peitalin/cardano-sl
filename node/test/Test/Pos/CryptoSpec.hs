@@ -24,10 +24,10 @@ import qualified Pos.Crypto              as Crypto
 import           Pos.Ssc.GodTossing      ()
 
 import           Test.Pos.CborSpec       (U)
-import           Test.Pos.Util           (binaryEncodeDecode, binaryTest, giveCoreConf,
-                                          giveInfraConf, msgLenLimitedTest, qcIsLeft,
-                                          safeCopyEncodeDecode, safeCopyTest, serDeserId,
-                                          (.=.))
+import           Test.Pos.Helpers        (binaryEncodeDecode, binaryTest,
+                                          msgLenLimitedTest, safeCopyEncodeDecode,
+                                          safeCopyTest, serDeserId, (.=.))
+import           Test.Pos.Util           (giveCoreConf, giveInfraConf, qcIsLeft)
 
 {-# ANN module ("HLint: ignore Reduce duplication" :: Text) #-}
 
