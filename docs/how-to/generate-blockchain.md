@@ -8,7 +8,7 @@ Basic example of the command:
 ```
 $ stack exec -- cardano-block-gen                \
     --system-start 0                             \
-    --configuration-file node/configuration.yaml \
+    --configuration-file configurations/configuration.yaml \
     --configuration-key mainnet_full             \
     --blocks 1000                                \
     --generated-db some-db                       \

@@ -8,7 +8,7 @@ Example of the command:
 ```
 $ stack exec -- cardano-auxx                      \
     --system-start 0                              \
-    --configuration-file node/configuration.yaml  \
+    --configuration-file configurations/configuration.yaml  \
     --configuration-key mainnet_full              \
     --log-config log-config-prod.yaml             \
     --logs-prefix "logs/mainnet-1.0"              \

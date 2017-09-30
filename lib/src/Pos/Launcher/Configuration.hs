@@ -66,7 +66,7 @@ data ConfigurationOptions = ConfigurationOptions
 
 defaultConfigurationOptions :: ConfigurationOptions
 defaultConfigurationOptions = ConfigurationOptions
-    { cfoFilePath    = "lib/configuration.yaml"
+    { cfoFilePath    = "configurations/configuration.yaml"
     , cfoKey         = "default"
     , cfoSystemStart = Nothing
     }

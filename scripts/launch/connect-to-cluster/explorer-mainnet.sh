@@ -17,7 +17,7 @@ stack exec --  cardano-explorer                             \
     --log-config scripts/log-templates/log-config-qa.yaml   \
     --logs-prefix "logs/${CLUSTER}"                         \
     --keyfile secret-$CLUSTER.key                           \
-    --configuration-file node/configuration.yaml            \
+    --configuration-file configurations/configuration.yaml            \
     --configuration-key mainnet_wallet_macos64
 
 # cmd="stack exec--

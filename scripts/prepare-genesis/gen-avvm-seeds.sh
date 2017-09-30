@@ -31,7 +31,7 @@ fi
 pushd "$REPO_PATH"
 
 
-stack exec --nix -- cardano-keygen --configuration-file node/configuration.yaml --configuration-key mainnet_launch_base generate-avvm-seeds -n "$AVVM_SEED_COUNT" -o "$AVVM_SECRET"
+stack exec --nix -- cardano-keygen --configuration-file configurations/configuration.yaml --configuration-key mainnet_launch_base generate-avvm-seeds -n "$AVVM_SEED_COUNT" -o "$AVVM_SECRET"
 
 i=$AVVM_SEED_COUNT
 {
