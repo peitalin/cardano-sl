@@ -20,8 +20,9 @@ Prerequisites
    are the only nodes that have stake in the system so they are the
    only nodes that can propose an update and vote for it.
 2. Access to the S3 bucket
-3. Installers corresponding to softawre version we're pushing to cluster
+3. Installers corresponding to software version we're pushing to cluster
    - Those are two executables (exe for win, pkg for mac) which are to be provided by QA (after QA procedures passed)
+   - Advice: after providing installers, ask QA to confirm hashes are same, we don't want to ship users incorrect installers to users
 4. Software version
    - Single integer, denote application version as for installers provided
 
