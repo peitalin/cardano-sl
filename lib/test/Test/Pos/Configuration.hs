@@ -6,11 +6,11 @@ import           Universum
 
 import qualified Data.Aeson                 as J
 import           Pos.Launcher.Configuration (Configuration (..))
-import           Pos.Util.Config            (embedYamlConfigCT)
+import           Pos.Util.Config            (embedYamlConfig)
 
 testConf :: Configuration
 testConf = case J.fromJSON $ J.Object jobj of
               J.Error str    -> error $ toText str
               J.Success conf -> conf
   where
-    jobj = $(embedYamlConfigCT (Proxy @J.Object) "configuration.yaml" "configuration.yaml" "test")
+    jobj = $(embedYamlConfig (Proxy @J.Object) "../configurations/configuration.yaml" "test")

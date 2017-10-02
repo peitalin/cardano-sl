@@ -188,7 +188,7 @@ test:
         <<: *dev_core_genesis_spec
         protocolConstants:
           <<: *dev_core_genesis_spec_protocolConstants
-          k: 35
+          k: 32
 
 
 ##############################################################################

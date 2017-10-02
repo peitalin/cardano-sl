@@ -2,6 +2,7 @@
 
 module Pos.Util.Config
        ( embedYamlConfigCT
+       , embedYamlConfig
        , embedYamlObject
        , parseYamlConfig
        , ConfigurationException (..)
@@ -16,6 +17,21 @@ import           System.Directory           (canonicalizePath, getDirectoryConte
 import           System.FilePath            (takeDirectory, takeFileName, (</>))
 
 import           Pos.Util.Util              (maybeThrow)
+
+-- | Fetch configuration file in compile time.
+embedYamlConfig
+    :: forall conf. (Y.FromJSON conf, TH.Lift conf)
+    => Proxy conf
+    -> FilePath
+    -> Text
+    -> TH.Q TH.Exp
+embedYamlConfig _ path key = do
+    TH.qAddDependentFile path
+    TH.runIO (Y.decodeFileEither @(Map Text conf) path) >>= \case
+        Left a        -> fail $ "Couldn't parse " ++ path ++ ": " ++ Y.prettyPrintParseException a
+        Right configs ->
+            maybe (fail $ "Embedded file " <> path <> " contains no key " <> toString key) TH.lift
+                  (Map.lookup key configs)
 
 embedYamlObject :: Y.FromJSON r => FilePath -> FilePath -> (r -> TH.Q TH.Exp) -> TH.Q TH.Exp
 embedYamlObject name marker parser = do
@@ -44,8 +60,9 @@ embedYamlObject name marker parser = do
         Left err -> fail $ "Couldn't parse " ++ path ++ ": " ++
                            Y.prettyPrintParseException err
 
-embedYamlConfigCT :: forall conf . (Y.FromJSON conf, TH.Lift conf)
-                => Proxy conf -> FilePath -> FilePath -> Text -> TH.Q TH.Exp
+embedYamlConfigCT
+    :: forall conf . (Y.FromJSON conf, TH.Lift conf)
+    => Proxy conf -> FilePath -> FilePath -> Text -> TH.Q TH.Exp
 embedYamlConfigCT _ name marker key =
     embedYamlObject @(Map Text conf) name marker $ \multiConfig ->
     maybe (fail $ "Embedded file " <> name <> " contains no key " <> toString key)
