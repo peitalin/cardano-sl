@@ -1,9 +1,7 @@
 Overview
 ========
 
-Software update is a protocol mechanism that allows nodes to
-automatically update their executables without changing protocol
-itself. Here's the process overview:
+Software update is a protocol mechanism that allows nodes to agree on software changes without altering protocol constants and update to this software version.
 1. Software update is proposed. Proposal is a datatype that gets into
    the blockchain. It contains information about version changes and
    hashes of update files.
@@ -31,12 +29,12 @@ Proposing the update
 
 Ensure your keys are somewhere around and named, say, `nodeX.key`,
 where `X ∈ [1..7]`. Procedure is done using `cardano-auxx`
-executable.
+executable, branch's code should be compatible with cluster (take release branch, e.g. `cardano-sl-1.0`).
 
-You should change param `--peer` for all commands listed below. Also consider changing `--log-config`, `--logs-prefix`.
+You should change param `--peer` for all commands listed below (it is a host of any relay node). Also consider changing `--log-config`, `--logs-prefix`.
 Note `--system-start 0` is perfectly valid because we don't need actual value for `cardano-auxx`.
 
-Import secret keys (only 4 of 7 needed, because we need majority):
+Import secret keys: only 4 of 7 is needed. Cluster nodes all have equal stake and more than a half stake's votes is needed to make a decision about update (approve/dismiss).
 
 ```
 stack exec cardano-auxx -- --system-start 0 --log-config
@@ -54,17 +52,21 @@ stack exec cardano-auxx -- --system-start 0 --log-config
   --peer <relay dns name>:3000 cmd --commands "propose-update 0 0.0.0 0 20 2000000 csl-daedalus:1 win64 daedalus1.exe none macos daedalus1c.pkg none"
 ```
 
-In command `propose-update`:
+Syntax and semantics of `propose-update` command:
+
+```
+propose-update <N> <block ver> <script ver> <slot duration> <max block size> <software ver> <propose_file>?
+```
 
 * First argument is index of imported key you're sending update
-from. Get it from `listaddr` output -- any cluster node will
+from. Step "import secret keys" has `listaddr` command in the end. Check it's output -- any cluster node will
 do (`0` states for first key imported).
-* Parameters 2-5 are block version data parameters -- leave they as
-they are provided in the cli example
-* `csl-daedalus:N` is software version description, you should substitute `N` with integer provided along with installers (see *Prerequisites* section, *4.* item)
+* Parameters 2-5 are block version data parameters -- leave them as
+they are provided in the cli example.
+* `csl-daedalus:1` is software version description, you should substitute `1` (version) with the integer provided along with installers (see *Prerequisites* section, *4.* item)
 * End of command: list of triples -- update installers. Provide the path to installers
 without any slashes (installers should be in the same dir as auxx is
-launched in)
+launched in). First tuple element is platform, second is path, `none` stands for binary diff (this feature is not used for now).
 
 That's it. Successfull command output looks like this:
 
@@ -115,4 +117,4 @@ In `vote N y 4c827d6fe03d4c3646ebbbc28d4e09c57690e1dcba54b9adc0050d3f76734cf6`:
 * `y` is for yes
 * `4c827d6fe03d4c3646ebbbc28d4e09c57690e1dcba54b9adc0050d3f76734cf6` is update proposal id or `upId`
 
-Votes will be sent to the network, software, update will apply soon.
+Successfull output ends in "submitted a vote". Votes will be sent to the network, software update will apply soon.
